@@ -404,6 +404,9 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
 	} else if (ARROW_RIGHT == sender.tag) {
 		self.day = [self nextDayFromDate:_day];
 	}
+    if ([self.delegate respondsToSelector:@selector(dayView:dateChanged:)]) {
+        [self.delegate dayView:self dateChanged:self.day];
+    }
 }
 
 - (void)handleSwipeFrom:(UISwipeGestureRecognizer *)recognizer {
