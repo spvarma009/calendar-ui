@@ -12,3 +12,7 @@ build/**
 # osx noise
 .DS_Store
 #profile
+
+*.xcworkspace/
+
+*.xcuserdatad/
