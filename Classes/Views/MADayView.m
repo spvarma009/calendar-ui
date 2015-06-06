@@ -259,7 +259,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
 - (MA_AllDayGridView *)allDayGridView {
 	if (!_allDayGridView) {
 		_allDayGridView = [[MA_AllDayGridView alloc] init];
-		_allDayGridView.backgroundColor = [UIColor whiteColor];
+		_allDayGridView.backgroundColor = [UIColor redColor];
 		_allDayGridView.dayView = self;
 		_allDayGridView.textFont = self.boldFont;
 		_allDayGridView.eventHeight = [@"FOO" sizeWithFont:self.regularFont].height * 2.f;
@@ -270,7 +270,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
 - (MADayGridView *)gridView {
 	if (!_gridView){
 		_gridView = [[MADayGridView alloc] init];
-		_gridView.backgroundColor = [UIColor whiteColor];
+		_gridView.backgroundColor = [UIColor grayColor];
 		_gridView.textFont = self.boldFont;
 		_gridView.textColor = [UIColor blackColor];
 		_gridView.dayView = self;
@@ -405,7 +405,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
 		self.day = [self nextDayFromDate:_day];
 	}
     if ([self.delegate respondsToSelector:@selector(dayView:dateChanged:)]) {
-        [self.delegate dayView:self dateChanged:self.day];
+        [self.delegate dayView:self dayChanged:self.day];
     }
 }
 
@@ -651,7 +651,6 @@ static NSString const * const HOURS_24[] = {
 	for (i=0; i < HOURS_IN_DAY; i++) {
 		hourSize[i] = [HOURS[i] sizeWithFont:self.textFont];
 		totalTextHeight += hourSize[i].height;
-		
 		if (hourSize[i].width > maxTextWidth) {
 			maxTextWidth = hourSize[i].width;
 		}

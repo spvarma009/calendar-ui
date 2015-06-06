@@ -78,5 +78,5 @@
 
 @optional
 - (void)dayView:(MADayView *)dayView eventTapped:(MAEvent *)event;
-- (void)dayView:(MADayView *)dayView dateChanged:(NSDate *)date;
+- (void)dayView:(MADayView *)dayView dayChanged:(NSDate *)date;
 @end
