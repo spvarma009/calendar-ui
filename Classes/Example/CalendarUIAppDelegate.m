@@ -43,6 +43,7 @@
 
     // Add the tab bar controller's view to the window and display.
     [window addSubview:tabBarController.view];
+    tabBarController.selectedIndex = 1;
     [window makeKeyAndVisible];
 
     return YES;

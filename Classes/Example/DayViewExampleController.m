@@ -96,7 +96,7 @@ static NSDate *date = nil;
 	
 	MAEvent *event = [[MAEvent alloc] init];
 	event.backgroundColor = ((flag = !flag) ? [UIColor purpleColor] : [UIColor brownColor]);
-	event.textColor = [UIColor whiteColor];
+	event.textColor = [UIColor blackColor];
 	event.allDay = NO;
 	event.userInfo = dict;
 	
