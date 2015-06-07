@@ -572,12 +572,11 @@ static const CGFloat kCorner       = 5.0;
 						   (int) (CGRectGetHeight(self.bounds) - 2*kCorner));
 	
 	CGSize sizeNeeded = [self.title sizeWithFont:self.textFont];
-    CGRect frame = self.bgView.frame;
-    frame.size.height = self.frame.size.height;
 	if (_textRect.size.height > sizeNeeded.height) {
 		_textRect.origin.y = (int) ((_textRect.size.height - sizeNeeded.height) / 2 + kCorner);
 	}
-    
+    CGRect frame = self.bgView.frame;
+    frame.size.height = self.frame.size.height;
     self.bgView.frame = frame;
 }
 

@@ -47,12 +47,15 @@ static NSString *LEFT_ARROW_IMAGE                             = @"ma_leftArrow.p
 static NSString *RIGHT_ARROW_IMAGE                            = @"ma_rightArrow.png";
 static const unsigned int ARROW_LEFT                          = 0;
 static const unsigned int ARROW_RIGHT                         = 1;
-static const unsigned int ARROW_WIDTH                         = 48;
+static const unsigned int ARROW_WIDTH                         = 30;
 static const unsigned int ARROW_HEIGHT                        = 38;
 static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 
 #define DATE_COMPONENTS (NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit | NSWeekCalendarUnit |  NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit | NSWeekdayCalendarUnit | NSWeekdayOrdinalCalendarUnit)
 #define CURRENT_CALENDAR [NSCalendar currentCalendar]
+
+#define linesColor [UIColor colorWithRed:111/255. green:122/255. blue:135/255. alpha:1]
+#define bgColor [UIColor colorWithRed:225/255.0 green:228/255.0 blue:228/255.0 alpha:1.0]
 
 @interface MAEventView : TapDetectingView <TapDetectingViewDelegate> {
 	NSString *_title;
@@ -76,6 +79,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 @property (nonatomic, strong) MAEvent *event;
 @property (nonatomic, assign) size_t xOffset;
 @property (nonatomic, assign) size_t yOffset;
+@property (nonatomic, strong) UIView *bgView;
 
 @end
 
@@ -144,8 +148,12 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 @property (readonly) UIButton *leftArrow;
 @property (readonly) UIButton *rightArrow;
 @property (readonly) UILabel *dateLabel;
+@property (readonly) UILabel *dayLabel;
+@property (readonly) UILabel *titleLabel;
+@property (readonly) UILabel *descLabel;
 @property (readonly) MAGridView *gridView;
 @property (readonly) UIScrollView *scrollView;
+@property (readonly) UIView *weekAreaView;
 @property (readonly) UIFont *regularFont;
 @property (readonly) UIFont *boldFont;
 @property (readonly) MAHourView *hourView;
@@ -154,6 +162,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 @property (readonly) UISwipeGestureRecognizer *swipeLeftRecognizer;
 @property (readonly) UISwipeGestureRecognizer *swipeRightRecognizer;
 @property (readonly) NSString *titleText;
+@property (readonly) NSString *titleDayText;
 @end
 
 @implementation MAWeekView
@@ -186,6 +195,10 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	[self addSubview:self.rightArrow];
 	[self addSubview:self.dateLabel];
 	[self addSubview:self.weekdayBarView];
+	[self addSubview:self.weekAreaView];
+	[self addSubview:self.dayLabel];
+	[self addSubview:self.titleLabel];
+	[self addSubview:self.descLabel];
 	
 	[self addSubview:self.scrollView];
 	
@@ -205,7 +218,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 										  CGRectGetMinY(self.bounds),
 										  CGRectGetWidth(self.bounds), TOP_BACKGROUND_HEIGHT + 10);
 	
-	self.leftArrow.frame = CGRectMake(CGRectGetMinX(self.topBackground.bounds),
+	self.leftArrow.frame = CGRectMake(CGRectGetWidth(self.topBackground.bounds) - ARROW_WIDTH - ARROW_WIDTH,
 								  CGRectGetMinY(self.topBackground.bounds),
 									  ARROW_WIDTH, ARROW_HEIGHT);
 	
@@ -213,11 +226,26 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 									CGRectGetMinY(self.topBackground.bounds),
 									ARROW_WIDTH, ARROW_HEIGHT);
 	
-	self.dateLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+	self.dateLabel.frame = CGRectMake(-90,
 									  CGRectGetMinY(self.topBackground.bounds),
 									  CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
 									  ARROW_HEIGHT);
+	self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+									   (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 6,
+									   CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+									   ARROW_HEIGHT);
+	self.descLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+									  (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 6,
+									  CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+									  ARROW_HEIGHT);
 	
+	self.weekAreaView.frame = CGRectMake(CGRectGetMinX(self.bounds)+40,
+										  CGRectGetMaxY(_topBackground.frame),
+										  CGRectGetWidth(self.bounds), TOP_BACKGROUND_HEIGHT + 10);
+	self.dayLabel.frame = CGRectMake(-90,
+									 (int) CGRectGetMaxY(self.dateLabel.frame)-25,
+									 CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+									 ARROW_HEIGHT);
 	self.allDayEventView.frame = CGRectMake(sizeNecessary.width, 0,
 											CGRectGetWidth(self.bounds) - sizeNecessary.width,
 											ALL_DAY_VIEW_EMPTY_SPACE);
@@ -235,7 +263,6 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 									 sizeNecessary.height * HOURS_IN_DAY * hourLabelSpacer);
 	
 	[self.hourView setNeedsDisplay];
-	
 	self.weekdayBarView.frame = CGRectMake(CGRectGetMaxX(self.hourView.bounds),
 										CGRectGetMaxY(self.topBackground.bounds) - sizeNecessaryBold.height, 
 										CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.hourView.bounds),
@@ -243,7 +270,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	[self.weekdayBarView setNeedsDisplay];
 	
 	self.scrollView.frame = CGRectMake(CGRectGetMinX(self.bounds),
-									   CGRectGetMaxY(self.topBackground.bounds),
+									   CGRectGetMaxY(self.topBackground.bounds)+30,
 									   CGRectGetWidth(self.bounds),
 									   CGRectGetHeight(self.bounds) - CGRectGetHeight(self.topBackground.bounds));
 	
@@ -295,6 +322,135 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	return _dateLabel;
 }
 
+- (UIView *)weekAreaView {
+	if (!_weekAreaView) {
+		_weekAreaView = [[UIView alloc] init];
+		
+	}
+	return _weekAreaView;
+}
+
+- (void)refreshWeekAreaView {
+	for (UIView *views in self.weekAreaView.subviews) {
+		[views removeFromSuperview];
+	}
+	register unsigned int i = 0;
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateStyle:NSDateFormatterShortStyle];
+	[formatter setDateFormat:@"dd"];
+	NSDateComponents *components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:_week];
+	NSMutableArray *_weekdays = [[NSMutableArray alloc]init];
+	NSArray *weekdaySymbols = [formatter shortWeekdaySymbols];
+	NSDate *date = _week;
+	NSDateComponents *components2 = [[NSDateComponents alloc] init];
+	CFCalendarRef currentCalendar = CFCalendarCopyCurrent();
+	int d = CFCalendarGetFirstWeekday(currentCalendar) - 1;
+	CFRelease(currentCalendar);
+	[components2 setDay:1];
+	for (register unsigned int i=0; i < DAYS_IN_WEEK; i++) {
+		[_weekdays addObject:date];
+		components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:date];
+		[components setDay:1];
+		date = [CURRENT_CALENDAR dateByAddingComponents:components2 toDate:date options:0];
+	}
+	const CGContextRef c = UIGraphicsGetCurrentContext();
+	CGContextBeginPath(c);
+	for (NSDate *date in _weekdays) {
+		CGContextSetStrokeColorWithColor(c, [linesColor CGColor]);
+		CGContextSetLineWidth(c, 0.5);
+		
+		NSDateComponents *components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:date];
+		NSString *displayDayText = [NSString stringWithFormat:@"%@", [weekdaySymbols objectAtIndex:d]];
+		NSString *displayDateText = [NSString stringWithFormat:@"%i", [components day]];
+		UILabel *dayLabel = [[UILabel alloc]init];
+		dayLabel.tag = 100+i;
+		dayLabel.text = displayDayText;
+		dayLabel.font = _regularFont;
+		dayLabel.textAlignment = UITextAlignmentCenter;
+		[_weekAreaView addSubview:dayLabel];
+		
+		UILabel *dateLabel = [[UILabel alloc]init];
+		dateLabel.tag = 500+i;
+		dateLabel.text = displayDateText;
+		dateLabel.font = _boldFont;
+		dateLabel.textAlignment = UITextAlignmentCenter;
+		[_weekAreaView addSubview:dateLabel];
+		int width = 40;
+		int cellWidth = 40;
+		CGRect rect = CGRectMake((cellWidth-1) * i + (((cellWidth-1) - width) / 2.f),
+								 0,
+								 width,
+								 10);
+		dayLabel.frame = rect;
+		CGRect frame = rect;
+		frame.origin.y = 10;
+		frame.size.height = 20;
+		dateLabel.frame = frame;
+		
+		UIColor *textColor       = [UIColor blackColor];
+		UIColor *sundayColor     = [UIColor colorWithRed:0.6 green:0 blue:0 alpha:1.f];
+		UIColor *todayColor      = [UIColor colorWithRed:0.1 green:0.5 blue:0.9 alpha:1.f];
+		NSDateComponents *todayComponents = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:[NSDate date]];
+		if ([todayComponents day] == [components day] &&
+			[todayComponents month] == [components month] &&
+			[todayComponents year] == [components year]) {
+			dateLabel.textColor = todayColor;
+		} else if ([components weekday] == 1) {
+			dateLabel.textColor = sundayColor;
+		} else {
+			dateLabel.textColor =textColor;
+		}
+		
+		dayLabel.textColor = dateLabel.textColor;
+		d = (d+1) % 7;
+		i++;
+		CGContextBeginPath(c);
+		CGContextMoveToPoint(c, cellWidth * i + ((cellWidth - width) / 2.f), 0);
+		CGContextAddLineToPoint(c, cellWidth * i + ((cellWidth - width) / 2.f), 1000);
+		
+	}
+	CGContextClosePath(c);
+	CGContextSaveGState(c);
+	CGContextDrawPath(c, kCGPathFillStroke);
+	CGContextRestoreGState(c);
+}
+- (UILabel *)dayLabel {
+	if (!_dayLabel) {
+		_dayLabel = [[UILabel alloc] init];
+		_dayLabel.numberOfLines = 0;
+		_dayLabel.textAlignment = UITextAlignmentCenter;
+		_dayLabel.backgroundColor = [UIColor clearColor];
+		_dayLabel.font = [UIFont boldSystemFontOfSize:12];
+		_dayLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
+	}
+	return _dayLabel;
+}
+
+- (UILabel *)descLabel {
+	if (!_descLabel) {
+		_descLabel = [[UILabel alloc] init];
+		_descLabel.numberOfLines = 0;
+		_descLabel.textAlignment = UITextAlignmentCenter;
+		_descLabel.backgroundColor = [UIColor clearColor];
+		_descLabel.font = [UIFont boldSystemFontOfSize:18];
+		_descLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
+	}
+	return _descLabel;
+}
+
+
+- (UILabel *)titleLabel {
+	if (!_titleLabel) {
+		_titleLabel = [[UILabel alloc] init];
+		_titleLabel.numberOfLines = 0;
+		_titleLabel.textAlignment = UITextAlignmentCenter;
+		_titleLabel.backgroundColor = [UIColor clearColor];
+		_titleLabel.font = [UIFont boldSystemFontOfSize:18];
+		_titleLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
+	}
+	return _titleLabel;
+}
+
 - (UIScrollView *)scrollView {
 	if (!_scrollView) {
 		_scrollView = [[UIScrollView alloc] init];
@@ -309,7 +465,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 - (MAAllDayEventView *)allDayEventView {
 	if (!_allDayEventView) {
 		_allDayEventView = [[MAAllDayEventView alloc] init];
-		_allDayEventView.backgroundColor = [UIColor whiteColor];
+		_allDayEventView.backgroundColor = bgColor;
 		_allDayEventView.weekView = self;
 		_allDayEventView.textFont = self.regularFont;
 	}
@@ -343,13 +499,13 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 - (MAGridView *)gridView {
 	if (!_gridView){		
 		_gridView = [[MAGridView alloc] init];
-		_gridView.backgroundColor = [UIColor whiteColor];
+		_gridView.backgroundColor = bgColor;
 		_gridView.rows            = HOURS_IN_DAY;
 		_gridView.columns         = DAYS_IN_WEEK;
 		_gridView.outerBorder     = YES;
 		_gridView.verticalLines   = YES;
 		_gridView.horizontalLines = YES;
-		_gridView.lineColor       = [UIColor lightGrayColor];
+		_gridView.lineColor       = linesColor;
 		_gridView.lineWidth       = 1;
 	}
 	return _gridView;
@@ -403,6 +559,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	self.allDayEventView.week = _week;
 	 
 	self.dateLabel.text = [self titleText];
+	self.dayLabel.text = [self titleDayText];
 	
 	[self reloadData];
 	
@@ -451,6 +608,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 		}
 		d++;
 	}
+	[self refreshWeekAreaView];
 }
 
 - (void)changeWeek:(UIButton *)sender {
@@ -504,13 +662,20 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 
 - (NSString *)titleText {
 	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateFormat:@"dd"];
+	return [NSString stringWithFormat:@"%@",
+			[formatter stringFromDate:_week]];
+}
+
+- (NSString *)titleDayText {
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateStyle:NSDateFormatterShortStyle];
+	[formatter setDateFormat:@"dd"];
 	NSDateComponents *components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:_week];
 	
-	NSArray *monthSymbols = [formatter shortMonthSymbols];
-	
-	return [NSString stringWithFormat:@"%@, week %i",
-			[monthSymbols objectAtIndex:[components month] - 1],
-			[components week]];
+	NSArray *weekdaySymbols = [formatter shortWeekdaySymbols];
+	return [NSString stringWithFormat:@"%@",
+			[weekdaySymbols objectAtIndex:[components weekday] - 1]];
 }
 
 @end
@@ -551,7 +716,7 @@ static NSString const * const HOURS_24[] = {
 	
 	for (i=1; i < HOURS_IN_DAY; i++) {
 		CGSize sizeNecessary = [HOURS[i] sizeWithFont:self.textFont];
-		CGRect rect = CGRectMake(CGRectGetMinX(self.bounds),
+		CGRect rect = CGRectMake(CGRectGetMinX(self.bounds)+5,
 								 (cellHeight * i) - (sizeNecessary.height / 2.f),
 								 sizeNecessary.width,
 								 sizeNecessary.height);
@@ -559,7 +724,7 @@ static NSString const * const HOURS_24[] = {
 		[HOURS[i] drawInRect: rect
 					 withFont:self.textFont
 				lineBreakMode:UILineBreakModeTailTruncation
-					alignment:UITextAlignmentLeft]; 
+					alignment:UITextAlignmentLeft];
 	}
 }
 
@@ -572,7 +737,8 @@ static NSString const * const HOURS_24[] = {
 	MAEventView *eventView = [[MAEventView alloc] init];
 	eventView.weekView = weekView;
 	eventView.event = event;
-	eventView.backgroundColor = event.backgroundColor;
+	eventView.backgroundColor = [UIColor whiteColor];
+	eventView.bgView.backgroundColor = event.backgroundColor;
 	eventView.title = event.title;
 	eventView.textFont = weekView.regularFont;
 	eventView.textColor = event.textColor;
@@ -628,48 +794,6 @@ static NSString const * const HOURS_24[] = {
 
 - (NSDate *)week {
 	return _week;
-}
-
-- (void)drawRect:(CGRect)rect {
-	register unsigned int i = 0;
-	
-	const CGFloat cellWidth = self.weekView.gridView.cellWidth;
-	
-	NSDateComponents *todayComponents = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:[NSDate date]];
-	
-	NSArray *weekdaySymbols = [self.dateFormatter veryShortWeekdaySymbols];
-	CFCalendarRef currentCalendar = CFCalendarCopyCurrent();
-	int d = CFCalendarGetFirstWeekday(currentCalendar) - 1;
-	CFRelease(currentCalendar);
-	
-	for (NSDate *date in _weekdays) {
-		NSDateComponents *components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:date];
-		NSString *displayText = [NSString stringWithFormat:@"%@ %i", [weekdaySymbols objectAtIndex:d], [components day]];
-		
-		CGSize sizeNecessary = [displayText sizeWithFont:self.textFont];
-		CGRect rect = CGRectMake(cellWidth * i + ((cellWidth - sizeNecessary.width) / 2.f),
-								 CGRectGetMinY(self.bounds),
-								 sizeNecessary.width,
-								 sizeNecessary.height);
-		
-		if ([todayComponents day] == [components day] &&
-			[todayComponents month] == [components month] &&
-			[todayComponents year] == [components year]) {
-			[self.todayColor set];
-		} else if ([components weekday] == 1) {
-			[self.sundayColor set];
-		} else {
-			[self.textColor set];
-		}
-		
-		[displayText drawInRect: rect
-					withFont:self.textFont
-			   lineBreakMode:UILineBreakModeTailTruncation
-				   alignment:UITextAlignmentLeft];
-		
-		d = (d+1) % 7;
-		i++;
-	}
 }
 
 - (NSDateFormatter *)dateFormatter {
@@ -749,7 +873,8 @@ static NSString const * const HOURS_24[] = {
 	
 	eventView.weekView = self.weekView;
 	eventView.event = event;
-	eventView.backgroundColor = event.backgroundColor;
+	eventView.backgroundColor = [UIColor whiteColor];
+	eventView.bgView.backgroundColor = event.backgroundColor;
 	eventView.title = event.title;
 	eventView.textFont = self.textFont;
 	eventView.textColor = event.textColor;
@@ -767,7 +892,7 @@ static NSString const * const HOURS_24[] = {
 @end
 
 static const CGFloat kAlpha        = 0.8;
-static const CGFloat kCornerRadius = 10.0;
+static const CGFloat kCornerRadius = 0.0;
 static const CGFloat kCorner       = 5.0;
 
 @implementation MAEventView
@@ -779,6 +904,7 @@ static const CGFloat kCorner       = 5.0;
 @synthesize event=_event;
 @synthesize xOffset=_xOffset;
 @synthesize yOffset=_yOffset;
+@synthesize bgView = _bgView;
 
 
 - (id)initWithFrame:(CGRect)frame {
@@ -800,7 +926,8 @@ static const CGFloat kCorner       = 5.0;
 	multipleTouches = NO;
 	delegate = self;
 	self.exclusiveTouch = YES;
-	
+	 self.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 0, 5)];
+	[self addSubview:self.bgView];
 	self.alpha = kAlpha;
 	CALayer *layer = [self layer];
 	layer.masksToBounds = YES;
@@ -812,6 +939,10 @@ static const CGFloat kCorner       = 5.0;
 						   CGRectGetMinY(self.bounds) + kCorner,
 						   CGRectGetWidth(self.bounds) - 2*kCorner,
 						   CGRectGetHeight(self.bounds) - 2*kCorner);
+	CGRect frame = self.bgView.frame;
+	frame.size.width = self.frame.size.width;
+	self.bgView.frame = frame;
+
 }
 
 - (void)drawRect:(CGRect)rect {

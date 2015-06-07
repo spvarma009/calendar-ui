@@ -114,7 +114,7 @@ static int counter = 7 * 5;
 	
 	MAEvent *event = [[MAEvent alloc] init];
 	event.backgroundColor = [UIColor purpleColor];
-	event.textColor = [UIColor whiteColor];
+	event.textColor = [UIColor blackColor];
 	event.allDay = NO;
 	event.userInfo = dict;
 	return event;
