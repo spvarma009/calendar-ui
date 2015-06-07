@@ -241,7 +241,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	
 	self.weekAreaView.frame = CGRectMake(CGRectGetMinX(self.bounds)+40,
 										  CGRectGetMaxY(_topBackground.frame),
-										  CGRectGetWidth(self.bounds), TOP_BACKGROUND_HEIGHT + 10);
+										  CGRectGetWidth(self.bounds), 40);
 	self.dayLabel.frame = CGRectMake(-90,
 									 (int) CGRectGetMaxY(self.dateLabel.frame)-25,
 									 CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
@@ -270,9 +270,9 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	[self.weekdayBarView setNeedsDisplay];
 	
 	self.scrollView.frame = CGRectMake(CGRectGetMinX(self.bounds),
-									   CGRectGetMaxY(self.topBackground.bounds)+30,
+									   CGRectGetMaxY(self.topBackground.bounds)+38,
 									   CGRectGetWidth(self.bounds),
-									   CGRectGetHeight(self.bounds) - CGRectGetHeight(self.topBackground.bounds));
+									   CGRectGetHeight(self.bounds) - CGRectGetHeight(self.topBackground.bounds) - 38);
 	
 	self.scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds),
 											 CGRectGetHeight(self.allDayEventView.bounds) + CGRectGetHeight(self.hourView.bounds) + VIEW_EMPTY_SPACE);
@@ -353,12 +353,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 		[components setDay:1];
 		date = [CURRENT_CALENDAR dateByAddingComponents:components2 toDate:date options:0];
 	}
-	const CGContextRef c = UIGraphicsGetCurrentContext();
-	CGContextBeginPath(c);
 	for (NSDate *date in _weekdays) {
-		CGContextSetStrokeColorWithColor(c, [linesColor CGColor]);
-		CGContextSetLineWidth(c, 0.5);
-		
 		NSDateComponents *components = [CURRENT_CALENDAR components:DATE_COMPONENTS fromDate:date];
 		NSString *displayDayText = [NSString stringWithFormat:@"%@", [weekdaySymbols objectAtIndex:d]];
 		NSString *displayDateText = [NSString stringWithFormat:@"%i", [components day]];
@@ -375,15 +370,15 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 		dateLabel.font = _boldFont;
 		dateLabel.textAlignment = UITextAlignmentCenter;
 		[_weekAreaView addSubview:dateLabel];
-		int width = 40;
-		int cellWidth = 40;
+		int width = 42.5;
+		int cellWidth = 42.5;
 		CGRect rect = CGRectMake((cellWidth-1) * i + (((cellWidth-1) - width) / 2.f),
-								 0,
+								 5,
 								 width,
 								 10);
 		dayLabel.frame = rect;
 		CGRect frame = rect;
-		frame.origin.y = 10;
+		frame.origin.y = 15;
 		frame.size.height = 20;
 		dateLabel.frame = frame;
 		
@@ -404,15 +399,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 		dayLabel.textColor = dateLabel.textColor;
 		d = (d+1) % 7;
 		i++;
-		CGContextBeginPath(c);
-		CGContextMoveToPoint(c, cellWidth * i + ((cellWidth - width) / 2.f), 0);
-		CGContextAddLineToPoint(c, cellWidth * i + ((cellWidth - width) / 2.f), 1000);
-		
 	}
-	CGContextClosePath(c);
-	CGContextSaveGState(c);
-	CGContextDrawPath(c, kCGPathFillStroke);
-	CGContextRestoreGState(c);
 }
 - (UILabel *)dayLabel {
 	if (!_dayLabel) {
