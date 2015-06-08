@@ -227,26 +227,29 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 									CGRectGetMinY(self.topBackground.bounds),
 									ARROW_WIDTH, ARROW_HEIGHT);
 	
-	self.dateLabel.frame = CGRectMake(-90,
-									  CGRectGetMinY(self.topBackground.bounds),
+	self.dateLabel.frame = CGRectMake(-100,
+									  (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2),
 									  CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
 									  ARROW_HEIGHT);
-	self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+	self.titleLabel.frame = CGRectMake(60,
 									   (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) - 3,
-									   CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+									   CGRectGetWidth(self.topBackground.bounds),
 									   ARROW_HEIGHT);
-	self.descLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+	self.descLabel.frame = CGRectMake(60,
 									  (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 12,
-									  CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+									  CGRectGetWidth(self.topBackground.bounds),
 									  ARROW_HEIGHT);
+	
+	
+	self.dayLabel.frame = CGRectMake(-100,
+									 (int) CGRectGetMaxY(self.dateLabel.frame)-25,
+									 CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+									 ARROW_HEIGHT);
+
 	
 	self.weekAreaView.frame = CGRectMake(CGRectGetMinX(self.bounds)+40,
 										  CGRectGetMaxY(_topBackground.frame),
 										  CGRectGetWidth(self.bounds), 40);
-	self.dayLabel.frame = CGRectMake(-90,
-									 (int) CGRectGetMaxY(self.dateLabel.frame)-25,
-									 CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
-									 ARROW_HEIGHT);
 	self.allDayEventView.frame = CGRectMake(sizeNecessary.width, 0,
 											CGRectGetWidth(self.bounds) - sizeNecessary.width,
 											ALL_DAY_VIEW_EMPTY_SPACE);
@@ -418,7 +421,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	if (!_descLabel) {
 		_descLabel = [[UILabel alloc] init];
 		_descLabel.numberOfLines = 0;
-		_descLabel.textAlignment = UITextAlignmentCenter;
+		_descLabel.textAlignment = UITextAlignmentLeft;
 		_descLabel.backgroundColor = [UIColor clearColor];
 		_descLabel.font = _descFont;
 		_descLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
@@ -431,7 +434,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 	if (!_titleLabel) {
 		_titleLabel = [[UILabel alloc] init];
 		_titleLabel.numberOfLines = 0;
-		_titleLabel.textAlignment = UITextAlignmentCenter;
+		_titleLabel.textAlignment = UITextAlignmentLeft;
 		_titleLabel.backgroundColor = [UIColor clearColor];
 		_titleLabel.font = _descFont;
 		_titleLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
@@ -728,7 +731,7 @@ static NSString const * const HOURS_24[] = {
 	eventView.backgroundColor = [UIColor whiteColor];
 	eventView.bgView.backgroundColor = event.backgroundColor;
 	eventView.title = event.title;
-	eventView.textFont = weekView.regularFont;
+	eventView.textFont = weekView.titleLabel.font;
 	eventView.textColor = event.textColor;
 	eventView.xOffset = offset;
 	

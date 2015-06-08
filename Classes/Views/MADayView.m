@@ -198,21 +198,21 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
 	self.rightArrow.frame = CGRectMake(CGRectGetWidth(self.topBackground.bounds) - ARROW_WIDTH,
 									   (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 6,
 									   ARROW_WIDTH, ARROW_HEIGHT);
-	self.dateLabel.frame = CGRectMake(-90,
+	self.dateLabel.frame = CGRectMake(-100,
 									  (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2),
 									  CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
 									  ARROW_HEIGHT);
-    self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+    self.titleLabel.frame = CGRectMake(60,
                                       (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) - 3,
-                                      CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+                                      CGRectGetWidth(self.topBackground.bounds),
                                       ARROW_HEIGHT);
-    self.descLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
+    self.descLabel.frame = CGRectMake(60,
                                        (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 12,
-                                       CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
+                                       CGRectGetWidth(self.topBackground.bounds),
                                        ARROW_HEIGHT);
     
     
-    self.dayLabel.frame = CGRectMake(-90,
+    self.dayLabel.frame = CGRectMake(-100,
                                       (int) CGRectGetMaxY(self.dateLabel.frame)-25,
                                       CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
                                       ARROW_HEIGHT);
@@ -288,7 +288,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
     if (!_descLabel) {
         _descLabel = [[UILabel alloc] init];
         _descLabel.numberOfLines = 0;
-        _descLabel.textAlignment = UITextAlignmentCenter;
+        _descLabel.textAlignment = UITextAlignmentLeft;
         _descLabel.backgroundColor = [UIColor clearColor];
         _descLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
@@ -300,7 +300,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
     if (!_titleLabel) {
         _titleLabel = [[UILabel alloc] init];
         _titleLabel.numberOfLines = 0;
-        _titleLabel.textAlignment = UITextAlignmentCenter;
+        _titleLabel.textAlignment = UITextAlignmentLeft;
         _titleLabel.backgroundColor = [UIColor clearColor];
         _titleLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
@@ -704,7 +704,7 @@ static NSString const * const HOURS_24[] = {
 	eventView.bgView.backgroundColor = event.backgroundColor;
     eventView.backgroundColor = [UIColor whiteColor];
 	eventView.title = event.title;
-	eventView.textFont = self.dayView.boldFont;
+	eventView.textFont = self.dayView.titleLabel.font;
 	eventView.textColor = event.textColor;
 	
 	[self addSubview:eventView];
