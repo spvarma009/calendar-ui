@@ -48,6 +48,8 @@
 
 - (void)viewDidLoad {
 	MADayView *dayView = (MADayView *) self.view;
+    dayView.titleLabel.text = @"title";
+    dayView.descLabel.text = @"description";
 	/* The default is not to autoscroll, so let's override the default here */
 	dayView.autoScrollToFirstEvent = YES;
 }

@@ -51,6 +51,9 @@
 	unsigned int _labelFontSize;
 	UIFont *_regularFont;
 	UIFont *_boldFont;
+    UIFont *_titleFont;
+    UIFont *_descFont;
+    UIFont *_dateFont;
 	
 	NSDate *_week;
 	

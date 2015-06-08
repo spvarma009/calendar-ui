@@ -46,7 +46,11 @@
 	MADayGridView *_gridView;	
 	
 	BOOL _autoScrollToFirstEvent;
+    
 	unsigned int _labelFontSize;
+    UIFont *_titleFont;
+    UIFont *_descFont;
+    UIFont *_dateFont;
 	UIFont *_regularFont;
 	UIFont *_boldFont;
 	

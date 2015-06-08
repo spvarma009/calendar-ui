@@ -61,7 +61,8 @@ static int counter = 7 * 5;
 
 - (NSArray *)weekView:(MAWeekView *)weekView eventsForDate:(NSDate *)startDate {
 	counter--;
-	
+    weekView.titleLabel.text = @"title";
+    weekView.descLabel.text = @"description";
 	unsigned int r = arc4random() % 24;
 	unsigned int r2 = arc4random() % 10;
 	

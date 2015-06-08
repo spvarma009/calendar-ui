@@ -203,11 +203,11 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
 									  CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
 									  ARROW_HEIGHT);
     self.titleLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
-                                      (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 6,
+                                      (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) - 3,
                                       CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
                                       ARROW_HEIGHT);
     self.descLabel.frame = CGRectMake(CGRectGetMaxX(self.leftArrow.bounds),
-                                       (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 6,
+                                       (int) ((CGRectGetHeight(self.topBackground.bounds) - ARROW_HEIGHT) / 2) + 12,
                                        CGRectGetWidth(self.topBackground.bounds) - CGRectGetWidth(self.leftArrow.bounds) - CGRectGetWidth(self.rightArrow.bounds),
                                        ARROW_HEIGHT);
     
@@ -268,7 +268,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _dateLabel.numberOfLines = 0;
 		_dateLabel.textAlignment = UITextAlignmentCenter;
 		_dateLabel.backgroundColor = [UIColor clearColor];
-		_dateLabel.font = [UIFont boldSystemFontOfSize:18];
+		_dateLabel.font = _dateFont;
 		_dateLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
 	}
 	return _dateLabel;
@@ -280,7 +280,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _dayLabel.numberOfLines = 0;
         _dayLabel.textAlignment = UITextAlignmentCenter;
         _dayLabel.backgroundColor = [UIColor clearColor];
-        _dayLabel.font = [UIFont boldSystemFontOfSize:12];
+        _dayLabel.font = _descFont;
         _dayLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
     return _dayLabel;
@@ -292,7 +292,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _descLabel.numberOfLines = 0;
         _descLabel.textAlignment = UITextAlignmentCenter;
         _descLabel.backgroundColor = [UIColor clearColor];
-        _descLabel.font = [UIFont boldSystemFontOfSize:18];
+        _descLabel.font = _descFont;
         _descLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
     return _descLabel;
@@ -305,7 +305,7 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _titleLabel.numberOfLines = 0;
         _titleLabel.textAlignment = UITextAlignmentCenter;
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.font = [UIFont boldSystemFontOfSize:18];
+        _titleLabel.font = _titleFont;
         _titleLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
     return _titleLabel;
@@ -858,7 +858,21 @@ static NSString const * const HOURS_24[] = {
 	const NSString *const *HOURS = ([self timeIs24HourFormat] ? HOURS_24 : HOURS_AM_PM);
 	register unsigned int i;
 	
-	const CGContextRef c = UIGraphicsGetCurrentContext();
+    CGContextRef contextRef = UIGraphicsGetCurrentContext();
+
+
+    CGContextSetLineWidth(contextRef, 50);
+    CGContextSetFillColorWithColor(contextRef, [UIColor whiteColor].CGColor);
+    CGRect rect1 = CGRectMake(0, 0, 51, self.frame.size.height);
+    CGContextFillRect(contextRef, rect1);
+    CGContextClosePath(contextRef);
+    CGContextSaveGState(contextRef);
+    CGContextRestoreGState(contextRef);
+    
+    
+    
+    
+    	const CGContextRef c = UIGraphicsGetCurrentContext();
 //Vertical Lines
 	CGContextBeginPath(c);
 	for (i=0; i < HOURS_IN_DAY; i++) {
@@ -866,6 +880,7 @@ static NSString const * const HOURS_24[] = {
 					withFont:self.textFont
 			   lineBreakMode:UILineBreakModeTailTruncation
 				   alignment:UITextAlignmentRight];
+        CGContextSetFillColorWithColor(contextRef, [UIColor blackColor].CGColor);
         
 		CGContextSetStrokeColorWithColor(c, [lineColor CGColor]);
         CGContextSetLineWidth(c, 0.5);
