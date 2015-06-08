@@ -38,8 +38,6 @@
 @interface MAWeekView : UIView {
 	UIImageView *_topBackground;
 	UIButton *_leftArrow, *_rightArrow;
-	UILabel *_dateLabel;
-    UILabel *_dayLabel;
 	
 	MAAllDayEventView *_allDayEventView;
 	UIScrollView *_scrollView;
@@ -68,6 +66,9 @@
 @property (nonatomic,copy) NSDate *week;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *descLabel;
+@property (nonatomic, strong) UILabel *dateLabel;
+@property (nonatomic, strong) UILabel *dayLabel;
+
 @property (nonatomic,unsafe_unretained) IBOutlet id<MAWeekViewDataSource> dataSource;
 @property (nonatomic,unsafe_unretained) IBOutlet id<MAWeekViewDelegate> delegate;
 

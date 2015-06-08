@@ -268,7 +268,6 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _dateLabel.numberOfLines = 0;
 		_dateLabel.textAlignment = UITextAlignmentCenter;
 		_dateLabel.backgroundColor = [UIColor clearColor];
-		_dateLabel.font = _dateFont;
 		_dateLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
 	}
 	return _dateLabel;
@@ -280,7 +279,6 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _dayLabel.numberOfLines = 0;
         _dayLabel.textAlignment = UITextAlignmentCenter;
         _dayLabel.backgroundColor = [UIColor clearColor];
-        _dayLabel.font = _descFont;
         _dayLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
     return _dayLabel;
@@ -292,7 +290,6 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _descLabel.numberOfLines = 0;
         _descLabel.textAlignment = UITextAlignmentCenter;
         _descLabel.backgroundColor = [UIColor clearColor];
-        _descLabel.font = _descFont;
         _descLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
     return _descLabel;
@@ -305,7 +302,6 @@ static const unsigned int TOP_BACKGROUND_HEIGHT          = 35;
         _titleLabel.numberOfLines = 0;
         _titleLabel.textAlignment = UITextAlignmentCenter;
         _titleLabel.backgroundColor = [UIColor clearColor];
-        _titleLabel.font = _titleFont;
         _titleLabel.textColor = [UIColor colorWithRed:59/255. green:73/255. blue:88/255. alpha:1];
     }
     return _titleLabel;
@@ -557,12 +553,16 @@ static const CGFloat kCorner       = 5.0;
 	twoFingerTapIsPossible = NO;
 	multipleTouches = NO;
 	delegate = self;
-    self.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 5, 0)];
+    self.bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, 3, 0)];
 	self.alpha = kAlpha;
 	CALayer *layer = [self layer];
 	layer.masksToBounds = YES;
 	[layer setCornerRadius:kCornerRadius];
     [self addSubview:self.bgView];
+    layer.shadowColor = [UIColor purpleColor].CGColor;
+    layer.shadowOffset = CGSizeMake(10, 10);
+    layer.shadowOpacity = 1;
+    layer.shadowRadius = 1.0;
 }
 
 - (void)layoutSubviews {
@@ -657,8 +657,8 @@ static const CGFloat kCorner       = 5.0;
 }
 
 - (void)addEvent:(MAEvent *)event {
-	MADayEventView *eventView = [[MADayEventView alloc] initWithFrame: CGRectMake(0, ALL_DAY_VIEW_EMPTY_SPACE + (ALL_DAY_VIEW_EMPTY_SPACE + self.eventHeight) * _eventCount,
-																				  self.bounds.size.width, self.eventHeight)];
+	MADayEventView *eventView = [[MADayEventView alloc] initWithFrame: CGRectMake(10, ALL_DAY_VIEW_EMPTY_SPACE + (ALL_DAY_VIEW_EMPTY_SPACE + self.eventHeight) * _eventCount,
+																				  self.bounds.size.width - 20, self.eventHeight)];
 	eventView.dayView = self.dayView;
 	eventView.event = event;
 	eventView.bgView.backgroundColor = event.backgroundColor;
@@ -771,9 +771,9 @@ static NSString const * const HOURS_24[] = {
 		prevEv = curEv;
 		curEv = [subviews objectAtIndex:i];
 		
-		curEv.frame = CGRectMake((int) _lineX,
+		curEv.frame = CGRectMake((int) _lineX+10,
 								 (int) (spacePerMinute * [curEv.event minutesSinceMidnight] + _lineY[0]),
-								 (int) (self.bounds.size.width - _lineX),
+								 (int) (self.bounds.size.width - _lineX - 20),
 								 (int) (spacePerMinute * [curEv.event durationInMinutes]));
 		
 		[curEv setNeedsDisplay];

@@ -37,9 +37,6 @@
 @interface MADayView : UIView {
 	UIImageView *_topBackground;
 	UIButton *_leftArrow, *_rightArrow;
-	UILabel *_dateLabel;
-    UILabel *_dayLabel;
-	
 	UIScrollView *_scrollView;
 	MA_AllDayGridView *_allDayGridView;
 	MADayHourView *_hourView;
@@ -63,10 +60,10 @@
 @property (readwrite,assign) unsigned int labelFontSize;
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *descLabel;
+@property (nonatomic, strong) UILabel *dateLabel;
+@property (nonatomic, strong) UILabel *dayLabel;
+
 @property (nonatomic,copy) NSDate *day;
-@property (nonatomic, strong) UIFont *titleFont;
-@property (nonatomic, strong) UIFont *descFont;
-@property (nonatomic, strong) UIFont *dateFont;
 
 @property (nonatomic,unsafe_unretained) IBOutlet id<MADayViewDataSource> dataSource;
 @property (nonatomic,unsafe_unretained) IBOutlet id<MADayViewDelegate> delegate;
