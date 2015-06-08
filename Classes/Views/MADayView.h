@@ -48,10 +48,7 @@
 	BOOL _autoScrollToFirstEvent;
     
 	unsigned int _labelFontSize;
-    UIFont *_titleFont;
-    UIFont *_descFont;
-    UIFont *_dateFont;
-	UIFont *_regularFont;
+   UIFont *_regularFont;
 	UIFont *_boldFont;
 	
 	NSDate *_day;
@@ -67,6 +64,10 @@
 @property (nonatomic, strong) UILabel *titleLabel;
 @property (nonatomic, strong) UILabel *descLabel;
 @property (nonatomic,copy) NSDate *day;
+@property (nonatomic, strong) UIFont *titleFont;
+@property (nonatomic, strong) UIFont *descFont;
+@property (nonatomic, strong) UIFont *dateFont;
+
 @property (nonatomic,unsafe_unretained) IBOutlet id<MADayViewDataSource> dataSource;
 @property (nonatomic,unsafe_unretained) IBOutlet id<MADayViewDelegate> delegate;
 

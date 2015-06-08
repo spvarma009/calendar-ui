@@ -85,8 +85,6 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 
 @interface MAHourView : UIView {
 	MAWeekView *_weekView;
-	UIColor *_textColor;
-	UIFont *_textFont;
 }
 
 - (BOOL)timeIs24HourFormat;
@@ -94,6 +92,9 @@ static const unsigned int TOP_BACKGROUND_HEIGHT               = 35;
 @property (nonatomic, strong) MAWeekView *weekView;
 @property (nonatomic, strong) UIColor *textColor;
 @property (nonatomic, strong) UIFont *textFont;
+@property (nonatomic, strong) UIFont *titleFont;
+@property (nonatomic, strong) UIFont *descFont;
+@property (nonatomic, strong) UIFont *dateFont;
 
 @end
 
